@@ -7,7 +7,12 @@ import scala.util.{Failure, Success, Try}
 
 object SangriaUtils {
 
-  /** Needed at runtime to correctly decode value classes. */
+  /** Needed at runtime to correctly decode value classes.
+    * @tparam T The internal value class
+    * @tparam U The external class that we use for in/output
+    * @param decode function to decode input U into internal type T
+    * @return The Circe decoder that we should add as an implicit
+    */
   def circeValueClassDecoder[T, U: Decoder](decode: U => T): Decoder[T] = (c: HCursor) => c.as[U].map(decode)
 
   /** Create a gql type for value class `T`, that will be an alias for an existing gqlType `U`.
