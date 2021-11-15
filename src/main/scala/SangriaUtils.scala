@@ -17,21 +17,34 @@ object SangriaUtils {
 
   /** Create a gql type for value class `T`, that will be an alias for an existing gqlType `U`.
     * It will still be represented as `U` by graphQl.
+    * @tparam T The internal value class
+    * @tparam U The external class that we use for in/output
+    * @param decode function to decode input U into internal type T
+    * @param encode function to encode internal type T to output U
+    * @param cd to ensure there is also a circe decoder for T
+    * @return The GraphQl type that we should add as an implicit
     */
-  def gqlAliasType[T: ClassTag, U](decode: U => T, encode: T => U)(implicit
-      d: Decoder[T],
-      uType: ScalarType[U]
-  ): ScalarAlias[T, U] =
+  def gqlAliasType[T: ClassTag, U](
+      decode: U => T,
+      encode: T => U
+  )(implicit cd: Decoder[T], uType: ScalarType[U]): ScalarAlias[T, U] =
     ScalarAlias[T, U](uType, encode, gqlParse(decode))
 
   /** Parse input of gqlType `U` into a value class `T`.
     * It will be represented as `className[T]` by graphQl.
+    * @tparam T The internal value class
+    * @tparam U The existing GraphQl type to base this on
+    * @param decode function to decode input U into internal type T
+    * @param encode function to encode internal type T to output U
+    * @param description graphQl documentation for T
+    * @param cd to ensure there is also a circe decoder for T
+    * @return The GraphQl type that we should add as an implicit
     */
   def gqlValueClassType[T: ClassTag, U](
       decode: U => T,
       encode: T => U,
       description: String
-  )(implicit d: Decoder[T], uType: ScalarType[U]): ScalarAlias[T, U] = {
+  )(implicit cd: Decoder[T], uType: ScalarType[U]): ScalarAlias[T, U] = {
     val renamed = uType.copy(name = className[T], description = Some(description))
     ScalarAlias[T, U](renamed, encode, gqlParse(decode))
   }
