@@ -40,7 +40,10 @@ object MutationSchema {
           Argument("color", Color.gqlType),
           Argument("speed", Speed.gqlType)
         ),
-        resolve = c => paintCat(c.arg[Cat]("cat"), c.arg[Color]("color"), c.arg[Speed]("speed"))
+        resolve = c => {
+          c.astFields
+          paintCat(c.arg[Cat]("cat"), c.arg[Color]("color"), c.arg[Speed]("speed"))
+        }
       )
     )
   )
