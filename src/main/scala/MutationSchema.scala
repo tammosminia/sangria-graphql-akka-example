@@ -1,4 +1,4 @@
-import io.circe.Decoder
+import io.circe.{Decoder, Encoder, Json}
 import io.circe.generic.auto._
 import sangria.macros.derive.{InputObjectTypeName, ObjectTypeName, deriveInputObjectType, deriveObjectType}
 import sangria.marshalling.circe._
@@ -7,6 +7,7 @@ import sangria.schema.{Field, fields, _}
 case class Color(underlying: String) extends AnyVal
 object Color {
   implicit val circeDecoder: Decoder[Color] = SangriaUtils.circeValueClassDecoder(apply)
+  implicit val circeEncoder: Encoder[Color] = Encoder.instance[Color](c => Json.fromString(c.underlying))
   implicit val gqlType: ScalarAlias[Color, String] = SangriaUtils.gqlAliasType(apply, _.underlying)
 }
 
@@ -37,11 +38,10 @@ object MutationSchema {
         Cat.gqlType,
         arguments = List(
           Argument("cat", Cat.gqlInputType),
-          Argument("color", Color.gqlType),
+          Argument("color", Color.gqlType, Color("black")),
           Argument("speed", Speed.gqlType)
         ),
         resolve = c => {
-          c.astFields
           paintCat(c.arg[Cat]("cat"), c.arg[Color]("color"), c.arg[Speed]("speed"))
         }
       )

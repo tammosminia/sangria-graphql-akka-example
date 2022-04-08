@@ -35,6 +35,10 @@ lazy val testDeps = Seq(
   "com.softwaremill.sttp.client3" %% "akka-http-backend" % "3.3.13"
 )
 
+lazy val logDeps = Seq(
+  "ch.qos.logback" % "logback-classic" % "1.2.11"
+)
+
 lazy val root = (project in file("."))
   .settings(
     inThisBuild(
@@ -47,7 +51,8 @@ lazy val root = (project in file("."))
       akkaDeps,
       sangriaDeps,
       serializationDeps,
-      testDeps
+      testDeps,
+      logDeps
     ).flatten,
     scalacOptions ++= Seq(
       "-language:postfixOps",
