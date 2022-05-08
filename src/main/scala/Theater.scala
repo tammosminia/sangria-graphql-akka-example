@@ -31,6 +31,4 @@ object Theater {
         Behaviors.same
     }
   }
-
-
 }

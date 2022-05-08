@@ -9,8 +9,7 @@ import scala.concurrent.duration.DurationInt
 
 class TheaterTest extends ScalaTestWithActorTestKit with AnyWordSpecLike {
 
-  def setupWithContext[T](f: ActorContext[T] => Assertion): Assertion = {
-    //a bit of a hack to get ActorContext from testKit
+  def runWithContext[T](f: ActorContext[T] => Assertion): Assertion = {
     def extractor(replyTo: ActorRef[Assertion]): Behavior[T] =
       Behaviors.setup { context =>
         replyTo ! f(context)
@@ -23,7 +22,7 @@ class TheaterTest extends ScalaTestWithActorTestKit with AnyWordSpecLike {
   }
 
   "Theater" should {
-    "echo input back" in setupWithContext[NotUsed] { context =>
+    "echo input back" in runWithContext[NotUsed] { context =>
       val theater = new Theater(context)
 
       whenReady(theater.echo("test")) { r =>
